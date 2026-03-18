@@ -1,0 +1,29 @@
+{
+    "name": "queryup",
+    "version": "0.0.1",
+    "description": "QueryUp Online SQL/Algorithm/Programming Judgement Platform",
+    "author": "yulmwu",
+    "private": true,
+    "license": "MIT",
+    "workspaces": [
+        "backend"
+    ],
+    "scripts": {
+        "backend:dev": "npm run dev --workspace=backend",
+        "backend:build": "npm run build --workspace=backend",
+        "backend:start": "npm run start --workspace=backend",
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+        "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+    },
+    "overrides": {
+        "@nestjs/common": "^11.1.17",
+        "@nestjs/core": "^11.1.17"
+    },
+    "devDependencies": {
+        "prettier": "^3.6.2"
+    },
+    "dependencies": {
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.4"
+    }
+}
