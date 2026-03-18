@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "target": "ESNext",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "paths": {
+            "*": ["./node_modules/*", "./src/*"]
+        },
+        "incremental": true,
+        "skipLibCheck": true,
+        "strictNullChecks": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": false,
+        "strictBindCallApply": false,
+        "strictPropertyInitialization": false,
+        "noFallthroughCasesInSwitch": false
+    }
+}
