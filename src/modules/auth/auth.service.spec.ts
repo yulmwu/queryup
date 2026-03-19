@@ -68,7 +68,13 @@ describe('AuthService', () => {
 
     it('register delegates to UsersService', async () => {
         usersService.create.mockResolvedValue({ id: 1 } as never)
-        const result = await service.register({ username: 'u', password: 'p', email: 'e' })
+        const result = await service.register({
+            username: 'u',
+            password: 'p',
+            email: 'e',
+            studentNumber: '30201',
+            department: 1,
+        })
 
         expect(usersService.create).toHaveBeenCalled()
         expect(result).toEqual({ id: 1 })

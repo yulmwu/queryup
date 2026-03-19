@@ -49,7 +49,13 @@ describe('UsersService (integration)', () => {
     })
 
     it('creates and reads a user', async () => {
-        const created = await service.create({ username: 'u1', password: 'p', email: 'u1@test.com' })
+        const created = await service.create({
+            username: 'u1',
+            password: 'p',
+            email: 'u1@test.com',
+            studentNumber: '30201',
+            department: 1,
+        })
         const found = await service.findById(created.id)
 
         expect(found.username).toBe('u1')
@@ -57,7 +63,13 @@ describe('UsersService (integration)', () => {
     })
 
     it('updates nickname and description', async () => {
-        const created = await service.create({ username: 'u2', password: 'p', email: 'u2@test.com' })
+        const created = await service.create({
+            username: 'u2',
+            password: 'p',
+            email: 'u2@test.com',
+            studentNumber: '30202',
+            department: 2,
+        })
         const updated = await service.update('u2', { nickname: 'nick', description: 'desc' }, created.id)
 
         expect(updated.nickname).toBe('nick')
