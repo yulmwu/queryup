@@ -58,10 +58,15 @@ export class UsersService {
 
         const trimmedNickname = updateUserDto.nickname?.trim()
         const trimmedDescription = updateUserDto.description?.trim()
+        const trimmedClub = updateUserDto.club?.trim()
 
         Object.assign(user, {
             nickname: trimmedNickname === '' ? null : trimmedNickname,
             description: trimmedDescription === '' ? null : trimmedDescription,
+            club: trimmedClub === '' ? null : trimmedClub,
+            studentNumber: updateUserDto.studentNumber ?? user.studentNumber,
+            department: updateUserDto.department ?? user.department,
+            status: user.status,
         })
 
         return await this.userRepo.save(user)

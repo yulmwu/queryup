@@ -1,6 +1,18 @@
 import { IntersectionType } from '@nestjs/swagger'
 import { CreatedAtDto, IdDto } from 'common/dto'
-import { EmailDto, NicknameDto, UsernameDto, RoleDto, UserDescriptionDto, ProfileImageDto } from '.'
+import {
+    EmailDto,
+    NicknameDto,
+    UsernameDto,
+    RoleDto,
+    UserDescriptionDto,
+    ProfileImageDto,
+    StudentNumberDto,
+    DepartmentDto,
+    StatusDto,
+    ClubDto,
+    VerifiedDto,
+} from '.'
 
 export class UserResponseDto extends IntersectionType(
     IdDto,
@@ -9,6 +21,11 @@ export class UserResponseDto extends IntersectionType(
     EmailDto,
     UserDescriptionDto,
     ProfileImageDto,
+    StudentNumberDto,
+    DepartmentDto,
+    StatusDto,
+    ClubDto,
+    VerifiedDto,
     CreatedAtDto,
     RoleDto,
 ) {}
@@ -19,5 +36,10 @@ export class UserBriefResponseDto extends IntersectionType(
     NicknameDto,
     UserDescriptionDto,
     ProfileImageDto,
+    StudentNumberDto,
+    DepartmentDto,
+    StatusDto,
+    ClubDto,
+    VerifiedDto,
     RoleDto,
 ) {}

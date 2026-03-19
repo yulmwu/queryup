@@ -16,13 +16,18 @@ describe('AuthController', () => {
             logout: jest.fn(),
             getMe: jest.fn(),
         } as unknown as jest.Mocked<AuthService>
+
         jwtService = {
             decode: jest.fn(),
         } as unknown as jest.Mocked<JwtService>
+
         controller = new AuthController(authService, jwtService)
     })
 
     it('login sets refresh cookie and returns access token info', async () => {
+        const originalEnv = process.env.NODE_ENV
+        process.env.NODE_ENV = 'test'
+
         authService.login.mockResolvedValue({
             refresh_token: 'rt',
             access_token: 'at',
@@ -35,11 +40,40 @@ describe('AuthController', () => {
 
         expect(res.cookie).toHaveBeenCalled()
         expect(result).toEqual({ id: 1, accessToken: 'at', maxAgeSeconds: 3600 })
+        process.env.NODE_ENV = originalEnv
+    })
+
+    it('login uses secure cookie in production', async () => {
+        const originalEnv = process.env.NODE_ENV
+        process.env.NODE_ENV = 'production'
+
+        authService.login.mockResolvedValue({
+            refresh_token: 'rt',
+            access_token: 'at',
+            user_id: 1,
+            max_age: 3600,
+        } as never)
+        const res = { cookie: jest.fn() } as any
+
+        await controller.login({ username: 'u', password: 'p' }, res)
+
+        expect(res.cookie).toHaveBeenCalledWith(
+            'refresh_token',
+            'rt',
+            expect.objectContaining({ secure: true, sameSite: 'none' }),
+        )
+        process.env.NODE_ENV = originalEnv
     })
 
     it('register delegates to AuthService', async () => {
         authService.register.mockResolvedValue({ id: 1 } as never)
-        const result = await controller.register({ username: 'u', password: 'p', email: 'e' })
+        const result = await controller.register({
+            username: 'u',
+            password: 'p',
+            email: 'e',
+            studentNumber: '30201',
+            department: 1,
+        })
         expect(result).toEqual({ id: 1 })
     })
 
@@ -77,6 +111,7 @@ describe('AuthController', () => {
     it('getMe returns user info', async () => {
         const req = { cookies: { refresh_token: 'rt' }, user: { userId: 1 } } as any
         authService.getMe.mockResolvedValue({ id: 1 } as never)
+
         const result = await controller.getMe(req)
         expect(result).toEqual({ id: 1 })
     })
@@ -86,6 +121,13 @@ describe('AuthController', () => {
         jwtService.decode.mockImplementation(() => {
             throw new Error('bad')
         })
+
+        await expect(controller.refresh(req)).rejects.toBeInstanceOf(UnauthorizedException)
+    })
+
+    it('throws unauthorized when refresh token payload is malformed', async () => {
+        const req = { cookies: { refresh_token: 'rt' } } as any
+        jwtService.decode.mockReturnValue({ sub: '1' } as never)
 
         await expect(controller.refresh(req)).rejects.toBeInstanceOf(UnauthorizedException)
     })

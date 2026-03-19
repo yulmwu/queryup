@@ -1,6 +1,15 @@
 import { IntersectionType } from '@nestjs/swagger'
 
-import { UserDescriptionDto, EmailDto, NicknameDto, PasswordDto, UsernameDto } from 'modules/users/dto'
+import {
+    UserDescriptionDto,
+    EmailDto,
+    NicknameDto,
+    PasswordDto,
+    UsernameDto,
+    StudentNumberDto,
+    DepartmentDto,
+    ClubDto,
+} from 'modules/users/dto'
 
 export class LoginDto extends IntersectionType(UsernameDto, PasswordDto) {}
 export class RegisterDto extends IntersectionType(
@@ -9,4 +18,7 @@ export class RegisterDto extends IntersectionType(
     PasswordDto,
     EmailDto,
     UserDescriptionDto,
+    StudentNumberDto,
+    DepartmentDto,
+    ClubDto,
 ) {}
