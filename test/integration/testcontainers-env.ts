@@ -22,9 +22,9 @@ export const ensureTestcontainersEnv = async () => {
         return async () => {}
     }
 
-    const username = 'queryup'
-    const password = 'queryup'
-    const database = 'queryup_test'
+    const username = 'sesori'
+    const password = 'sesori'
+    const database = 'sesori_test'
 
     const started: Started = {
         postgres: await new PostgreSqlContainer('postgres:16-alpine')

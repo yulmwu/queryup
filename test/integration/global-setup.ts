@@ -8,9 +8,9 @@ const envPath = path.join(__dirname, 'test-env.json')
 
 module.exports = async () => {
     const postgres = await new PostgreSqlContainer('postgres:16-alpine')
-        .withDatabase('queryup_test')
-        .withUsername('queryup')
-        .withPassword('queryup')
+        .withDatabase('sesori_test')
+        .withUsername('sesori')
+        .withPassword('sesori')
         .start()
 
     const redis = await new GenericContainer('redis:7-alpine').withExposedPorts(6379).start()
