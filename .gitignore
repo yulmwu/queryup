@@ -80,3 +80,6 @@ next-env.d.ts
 .vercel
 
 public/runtime-config.js
+
+# Coverage
+**/coverage

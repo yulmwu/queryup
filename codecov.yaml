@@ -1,0 +1,25 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 70%
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "node_modules/**"
+  - "**/dist/**"
+  - "**/coverage/**"
+  - "src/**/*.dto.ts"
+  - "src/**/dto/**"
+  - "src/common/types/**"
+  - "src/common/constants/**"
+  - "src/main.ts"
+  - "**/*.spec.ts"
