@@ -14,6 +14,7 @@ Modules
 
 - `auth` -> `docs/RESTAPI/auth.md`
 - `users` -> `docs/RESTAPI/users.md`
+- `community` -> `docs/RESTAPI/community.md`
 - `errors` -> `docs/RESTAPI/errors.md`
 
 Common Response Shape
