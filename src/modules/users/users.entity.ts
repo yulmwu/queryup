@@ -15,7 +15,7 @@ export class User {
     username: string
 
     @Column({ type: 'varchar', length: 32, nullable: true })
-    nickname: string
+    nickname?: string
 
     @Exclude()
     @Column({ type: 'varchar', length: 255, select: false })

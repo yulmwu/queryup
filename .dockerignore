@@ -1,49 +1,47 @@
-# Node modules
-**/node_modules
-
-# Local build artifacts (but allow copying from Docker build stages)
-backend/dist
-frontend/.next
-!shared/dist
-
-**/build
-
-# Logs
-**/*.log
+/dist
+/node_modules
+/build
 logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.DS_Store
+/coverage
+/.nyc_output
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+.temp
+.tmp
+pids
+*.pid
+*.seed
+*.pid.lock
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Environment variables
-**/.env
-**/.env.*
-
-# IDE
-**/.idea
-**/.vscode
-**/.DS_Store
-
-# Git
-**/.git
-**/.gitignore
-
-# Docker
-**/Dockerfile
-**/.dockerignore
-
-# Documentation
-**/*.md
-
-# CI/CD
-**/*.yml
-**/*.yaml
-
-# Build artifacts
-**/coverage
-**/.nyc_output
-
-# Temp files
-**/.temp
-**/.tmp
-**/pids
-**/*.pid
-**/*.seed
-**/*.pid.lock
+.idea
+.git
+.gitignore
+.dockerignore
+Dockerfile
+*.md
+*.sh
+*.yml
+scripts
