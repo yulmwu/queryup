@@ -26,43 +26,49 @@ describe('AuthController', () => {
 
     it('login sets refresh cookie and returns access token info', async () => {
         const originalEnv = process.env.NODE_ENV
-        process.env.NODE_ENV = 'test'
+        try {
+            process.env.NODE_ENV = 'test'
 
-        authService.login.mockResolvedValue({
-            refresh_token: 'rt',
-            access_token: 'at',
-            user_id: 1,
-            max_age: 3600,
-        } as never)
-        const res = { cookie: jest.fn() } as any
+            authService.login.mockResolvedValue({
+                refresh_token: 'rt',
+                access_token: 'at',
+                user_id: 1,
+                max_age: 3600,
+            } as never)
+            const res = { cookie: jest.fn() } as any
 
-        const result = await controller.login({ username: 'u', password: 'p' }, res)
+            const result = await controller.login({ username: 'u', password: 'p' }, res)
 
-        expect(res.cookie).toHaveBeenCalled()
-        expect(result).toEqual({ id: 1, accessToken: 'at', maxAgeSeconds: 3600 })
-        process.env.NODE_ENV = originalEnv
+            expect(res.cookie).toHaveBeenCalled()
+            expect(result).toEqual({ id: 1, accessToken: 'at', maxAgeSeconds: 3600 })
+        } finally {
+            process.env.NODE_ENV = originalEnv
+        }
     })
 
     it('login uses secure cookie in production', async () => {
         const originalEnv = process.env.NODE_ENV
-        process.env.NODE_ENV = 'production'
+        try {
+            process.env.NODE_ENV = 'production'
 
-        authService.login.mockResolvedValue({
-            refresh_token: 'rt',
-            access_token: 'at',
-            user_id: 1,
-            max_age: 3600,
-        } as never)
-        const res = { cookie: jest.fn() } as any
+            authService.login.mockResolvedValue({
+                refresh_token: 'rt',
+                access_token: 'at',
+                user_id: 1,
+                max_age: 3600,
+            } as never)
+            const res = { cookie: jest.fn() } as any
 
-        await controller.login({ username: 'u', password: 'p' }, res)
+            await controller.login({ username: 'u', password: 'p' }, res)
 
-        expect(res.cookie).toHaveBeenCalledWith(
-            'refresh_token',
-            'rt',
-            expect.objectContaining({ secure: true, sameSite: 'none' }),
-        )
-        process.env.NODE_ENV = originalEnv
+            expect(res.cookie).toHaveBeenCalledWith(
+                'refresh_token',
+                'rt',
+                expect.objectContaining({ secure: true, sameSite: 'none' }),
+            )
+        } finally {
+            process.env.NODE_ENV = originalEnv
+        }
     })
 
     it('register delegates to AuthService', async () => {
