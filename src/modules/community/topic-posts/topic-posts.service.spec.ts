@@ -43,4 +43,119 @@ describe('TopicPostsService', () => {
 
         await expect(service.findOne('dev', 1)).rejects.toBeInstanceOf(NotFoundException)
     })
+
+    it('list returns items and meta', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1, slug: 'dev' })
+        postRepo.findAndCount.mockResolvedValue([
+            [
+                {
+                    id: 1,
+                    title: 't',
+                    topic: {
+                        id: 1,
+                        slug: 'dev',
+                        name: 'Dev',
+                        description: 'd',
+                        creator: { id: 1, username: 'u', role: 1 },
+                        createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                        updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+                    },
+                    author: { id: 1, username: 'u', role: 1 },
+                    createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                    updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+                },
+            ],
+            1,
+        ])
+
+        const result = await service.list('dev', 1, 10)
+
+        expect(result.meta.total).toBe(1)
+        expect(result.items[0]).toEqual(expect.objectContaining({ id: 1 }))
+    })
+
+    it('create returns saved post', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1, slug: 'dev' })
+        usersService.findById.mockResolvedValue({ id: 1 } as never)
+        postRepo.create.mockReturnValue({ id: 1 })
+        postRepo.save.mockResolvedValue({
+            id: 1,
+            title: 't',
+            content: 'c',
+            topic: {
+                id: 1,
+                slug: 'dev',
+                name: 'Dev',
+                description: 'd',
+                creator: { id: 1, username: 'u', email: 'e@test.com', role: 1 },
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            },
+            author: { id: 1, username: 'u', email: 'e@test.com', role: 1 },
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.create('dev', 1, { title: 't', content: 'c' })
+
+        expect(result).toEqual(expect.objectContaining({ id: 1, title: 't' }))
+    })
+
+    it('update returns updated post', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1, slug: 'dev' })
+        postRepo.findOne.mockResolvedValue({
+            id: 1,
+            title: 't',
+            content: 'c',
+            author: { id: 1 },
+            topic: {
+                id: 1,
+                slug: 'dev',
+                name: 'Dev',
+                description: 'd',
+                creator: { id: 1, username: 'u', email: 'e@test.com', role: 1 },
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            },
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+        postRepo.save.mockResolvedValue({
+            id: 1,
+            title: 't2',
+            content: 'c2',
+            author: { id: 1, username: 'u', email: 'e@test.com', role: 1 },
+            topic: {
+                id: 1,
+                slug: 'dev',
+                name: 'Dev',
+                description: 'd',
+                creator: { id: 1, username: 'u', email: 'e@test.com', role: 1 },
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            },
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.update('dev', 1, 1, { title: 't2', content: 'c2' })
+
+        expect(result).toEqual(expect.objectContaining({ title: 't2', content: 'c2' }))
+    })
+
+    it('remove marks post deleted', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1, slug: 'dev' })
+        const post = {
+            id: 1,
+            isDeleted: false,
+            author: { id: 1 },
+            topic: { id: 1 },
+        }
+        postRepo.findOne.mockResolvedValue(post)
+
+        await service.remove('dev', 1, 1)
+
+        expect(post.isDeleted).toBe(true)
+        expect(postRepo.save).toHaveBeenCalledWith(post)
+    })
 })

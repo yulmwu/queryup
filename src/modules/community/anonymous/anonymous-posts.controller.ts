@@ -17,7 +17,7 @@ const extractIp = (req: ExpressRequest) => {
         return forwarded.split(',')[0].trim()
     }
 
-    return req.ip
+    return req.ip ?? '0.0.0.0'
 }
 
 @ApiTags('Community - Anonymous')

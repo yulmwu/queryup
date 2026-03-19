@@ -27,6 +27,7 @@ describe('TopicsService', () => {
 
     it('create rejects duplicate slug', async () => {
         repo.findOne.mockResolvedValue({ id: 1 })
+
         await expect(service.create(1, { slug: 'dev', name: 'Dev', description: 'd' })).rejects.toBeInstanceOf(
             ConflictException,
         )
@@ -41,6 +42,63 @@ describe('TopicsService', () => {
 
     it('update throws when topic missing', async () => {
         repo.findOne.mockResolvedValue(null)
+
         await expect(service.update('dev', 1, { name: 'n' })).rejects.toBeInstanceOf(NotFoundException)
+    })
+
+    it('list returns items and meta', async () => {
+        repo.findAndCount.mockResolvedValue([
+            [
+                {
+                    id: 1,
+                    slug: 'dev',
+                    name: 'Dev',
+                    description: 'd',
+                    creator: { id: 1, username: 'u', role: UserRole.USER },
+                    createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                    updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+                },
+            ],
+            1,
+        ])
+
+        const result = await service.list(1, 10)
+
+        expect(result.meta.total).toBe(1)
+        expect(result.items[0]).toEqual(expect.objectContaining({ slug: 'dev' }))
+    })
+
+    it('findBySlug returns topic detail', async () => {
+        repo.findOne.mockResolvedValue({
+            id: 1,
+            slug: 'dev',
+            name: 'Dev',
+            description: 'd',
+            creator: { id: 1, username: 'u', email: 'e@test.com', role: UserRole.USER },
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.findBySlug('dev')
+
+        expect(result).toEqual(expect.objectContaining({ slug: 'dev' }))
+    })
+
+    it('update allows admin and changes slug', async () => {
+        repo.findOne.mockResolvedValueOnce({ id: 1, slug: 'dev', creator: { id: 2 } }).mockResolvedValueOnce(null)
+        usersService.findById.mockResolvedValue({ id: 1, role: UserRole.ADMIN } as never)
+        repo.save.mockResolvedValue({
+            id: 1,
+            slug: 'new-dev',
+            name: 'Dev',
+            description: 'd',
+            creator: { id: 2, username: 'u', email: 'e@test.com', role: UserRole.USER },
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.update('dev', 1, { slug: 'new-dev' })
+
+        expect(result).toEqual(expect.objectContaining({ slug: 'new-dev' }))
     })
 })

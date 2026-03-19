@@ -80,6 +80,88 @@ describe('AnonymousPostsService', () => {
         await expect(service.update(1, { password: 'bad' })).rejects.toBeInstanceOf(UnauthorizedException)
     })
 
+    it('findOne returns post detail', async () => {
+        repo.findOne.mockResolvedValue({
+            id: 1,
+            title: 't',
+            content: 'c',
+            authorName: 'anon',
+            ipAddress: '123.456.78.90',
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.findOne(1)
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                id: 1,
+                authorName: 'anon',
+                ipMasked: '123.456.*.*',
+            }),
+        )
+    })
+
+    it('list returns items and meta', async () => {
+        repo.findAndCount.mockResolvedValue([
+            [
+                {
+                    id: 1,
+                    title: 't',
+                    authorName: 'anon',
+                    ipAddress: '123.456.78.90',
+                    createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                    updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+                },
+            ],
+            1,
+        ])
+
+        const result = await service.list(1, 10)
+
+        expect(result.meta.total).toBe(1)
+        expect(result.items[0]).toEqual(
+            expect.objectContaining({
+                id: 1,
+                ipMasked: '123.456.*.*',
+            }),
+        )
+    })
+
+    it('update succeeds with correct password', async () => {
+        const qb = {
+            addSelect: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            andWhere: jest.fn().mockReturnThis(),
+            getOne: jest.fn().mockResolvedValue({
+                id: 1,
+                passwordHash: 'hash',
+                title: 't',
+                content: 'c',
+                authorName: 'anon',
+                ipAddress: '1.2.3.4',
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            }),
+        }
+        repo.createQueryBuilder.mockReturnValue(qb)
+        ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
+
+        repo.save.mockResolvedValue({
+            id: 1,
+            title: 't2',
+            content: 'c2',
+            authorName: 'anon',
+            ipAddress: '1.2.3.4',
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+
+        const result = await service.update(1, { title: 't2', content: 'c2', password: 'p' })
+
+        expect(result).toEqual(expect.objectContaining({ title: 't2', content: 'c2' }))
+    })
+
     it('remove rejects when post missing', async () => {
         const qb = {
             addSelect: jest.fn().mockReturnThis(),
@@ -90,5 +172,26 @@ describe('AnonymousPostsService', () => {
         repo.createQueryBuilder.mockReturnValue(qb)
 
         await expect(service.remove(1, { password: 'p' })).rejects.toBeInstanceOf(NotFoundException)
+    })
+
+    it('remove succeeds with correct password', async () => {
+        const post = {
+            id: 1,
+            passwordHash: 'hash',
+            isDeleted: false,
+        }
+        const qb = {
+            addSelect: jest.fn().mockReturnThis(),
+            where: jest.fn().mockReturnThis(),
+            andWhere: jest.fn().mockReturnThis(),
+            getOne: jest.fn().mockResolvedValue(post),
+        }
+        repo.createQueryBuilder.mockReturnValue(qb)
+        ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
+        repo.save.mockResolvedValue({ ...post, isDeleted: true })
+
+        await service.remove(1, { password: 'p' })
+
+        expect(post.isDeleted).toBe(true)
     })
 })
