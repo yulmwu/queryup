@@ -22,17 +22,20 @@ describe('TypeOrmExceptionFilter', () => {
         const filter = new TypeOrmExceptionFilter()
         const { host, status, json } = makeHost()
 
-        filter.catch({ code: '23505', detail: 'dup' } as never, host)
+        try {
+            filter.catch({ code: '23505', detail: 'dup' } as never, host)
 
-        expect(status).toHaveBeenCalledWith(409)
-        expect(json).toHaveBeenCalledWith(
-            expect.objectContaining({
-                statusCode: 409,
-                error: 'Conflict',
-            }),
-        )
-        errorSpy.mockRestore()
-        process.env.NODE_ENV = originalEnv
+            expect(status).toHaveBeenCalledWith(409)
+            expect(json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    statusCode: 409,
+                    error: 'Conflict',
+                }),
+            )
+        } finally {
+            errorSpy.mockRestore()
+            process.env.NODE_ENV = originalEnv
+        }
     })
 
     it('maps unknown code to 500', () => {
