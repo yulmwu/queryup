@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './users.entity'
 import { Repository } from 'typeorm'
@@ -50,11 +50,8 @@ export class UsersService {
         return user
     }
 
-    async update(username: string, updateUserDto: UserUpdateRequestDto, userId: number) {
-        const user = await this.findByUsername(username)
-        if (user.id !== userId) {
-            throw new ForbiddenException('You are not allowed to update this user')
-        }
+    async update(userId: number, updateUserDto: UserUpdateRequestDto) {
+        const user = await this.findById(userId)
 
         const trimmedNickname = updateUserDto.nickname?.trim()
         const trimmedDescription = updateUserDto.description?.trim()

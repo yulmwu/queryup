@@ -7,6 +7,7 @@ import { User } from 'modules/users/users.entity'
 import * as bcrypt from 'bcrypt'
 
 import { GetMeResponseDto, LoginDto, RegisterDto } from './dto'
+import { UserUpdateRequestDto } from 'modules/users/dto/request.dto'
 
 @Injectable()
 export class AuthService {
@@ -59,5 +60,9 @@ export class AuthService {
     async getMe(userId: number): Promise<GetMeResponseDto> {
         const user = await this.usersService.findById(userId)
         return user
+    }
+
+    async updateMe(userId: number, updateUserDto: UserUpdateRequestDto) {
+        return this.usersService.update(userId, updateUserDto)
     }
 }

@@ -22,6 +22,7 @@ describe('AuthService', () => {
             getPasswordByUsername: jest.fn(),
             create: jest.fn(),
             findById: jest.fn(),
+            update: jest.fn(),
         } as unknown as jest.Mocked<UsersService>
 
         jwtService = {
@@ -101,6 +102,14 @@ describe('AuthService', () => {
     it('getMe returns user', async () => {
         usersService.findById.mockResolvedValue({ id: 1 } as never)
         const result = await service.getMe(1)
+        expect(result).toEqual({ id: 1 })
+    })
+
+    it('updateMe delegates to UsersService', async () => {
+        usersService.update.mockResolvedValue({ id: 1 } as never)
+        const result = await service.updateMe(1, { nickname: 'n' } as never)
+
+        expect(usersService.update).toHaveBeenCalledWith(1, { nickname: 'n' })
         expect(result).toEqual({ id: 1 })
     })
 })

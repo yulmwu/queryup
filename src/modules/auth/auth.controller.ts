@@ -8,6 +8,7 @@ import {
     UnauthorizedException,
     UseGuards,
     Get,
+    Put,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import {
@@ -19,6 +20,7 @@ import {
     ApiConflictResponse,
     ApiBody,
     ApiBearerAuth,
+    ApiForbiddenResponse,
 } from '@nestjs/swagger'
 import { Request, Response } from 'express'
 import { JwtService } from '@nestjs/jwt'
@@ -27,6 +29,8 @@ import { AccessTokenDto, GetMeResponseDto, LoginDto, LoginResponseDto, RegisterD
 import { REFRESH_TOKEN_EXPIRES_IN_SECONDS } from 'common/constants'
 import { AuthenticatedRequest } from 'common/types/express-request.interface'
 import { JwtAuthGuard } from 'common/guards/jwt-auth.guard'
+import { UserUpdateRequestDto } from 'modules/users/dto/request.dto'
+import { UserResponseDto } from 'modules/users/dto'
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -100,6 +104,17 @@ export class AuthController {
         }
 
         return this.authService.getMe(req.user.userId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Put('me')
+    @ApiOperation({ summary: 'Update current user information' })
+    @ApiResponse({ status: 200, description: 'Returns updated user information.', type: UserResponseDto })
+    @ApiBadRequestResponse({ description: 'Request payload is invalid.' })
+    @ApiUnauthorizedResponse({ description: 'User is not authenticated.' })
+    updateMe(@Body() updateUserDto: UserUpdateRequestDto, @Req() req: AuthenticatedRequest): Promise<UserResponseDto> {
+        return this.authService.updateMe(req.user.userId, updateUserDto)
     }
 
     private extractUserIdFromRefreshToken(req: Request): number {

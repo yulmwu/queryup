@@ -70,7 +70,7 @@ describe('UsersService (integration)', () => {
             studentNumber: '30202',
             department: 2,
         })
-        const updated = await service.update('u2', { nickname: 'nick', description: 'desc' }, created.id)
+        const updated = await service.update(created.id, { nickname: 'nick', description: 'desc' })
 
         expect(updated.nickname).toBe('nick')
         expect(updated.description).toBe('desc')

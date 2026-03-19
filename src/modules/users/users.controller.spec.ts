@@ -8,7 +8,6 @@ describe('UsersController', () => {
     beforeEach(() => {
         usersService = {
             findByUsername: jest.fn(),
-            update: jest.fn(),
         } as unknown as jest.Mocked<UsersService>
         controller = new UsersController(usersService)
     })
@@ -26,13 +25,5 @@ describe('UsersController', () => {
         await controller.findByUsername({ username: 'u' }, {} as any)
 
         expect(usersService.findByUsername).toHaveBeenCalledWith('u', undefined)
-    })
-
-    it('update delegates to service', async () => {
-        usersService.update.mockResolvedValue({ id: 1 } as never)
-        const result = await controller.update({ username: 'u' }, { nickname: 'n' }, { user: { userId: 1 } } as any)
-
-        expect(usersService.update).toHaveBeenCalledWith('u', { nickname: 'n' }, 1)
-        expect(result).toEqual({ id: 1 })
     })
 })

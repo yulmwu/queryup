@@ -1,4 +1,4 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common'
+import { NotFoundException } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
@@ -148,17 +148,6 @@ describe('UsersService', () => {
         expect(result).toEqual({ id: 1, password: 'hash' })
     })
 
-    it('update rejects when userId mismatch', async () => {
-        jest.spyOn(service, 'findByUsername').mockResolvedValue({
-            id: 2,
-            studentNumber: '30201',
-            department: 1,
-            status: 1,
-            isVerified: false,
-        } as User)
-        await expect(service.update('u1', { nickname: 'n' }, 1)).rejects.toBeInstanceOf(ForbiddenException)
-    })
-
     it('update trims and saves fields', async () => {
         const user = {
             id: 1,
@@ -170,10 +159,10 @@ describe('UsersService', () => {
             status: 1,
             isVerified: false,
         } as User
-        jest.spyOn(service, 'findByUsername').mockResolvedValue(user)
+        jest.spyOn(service, 'findById').mockResolvedValue(user)
         repo.save.mockResolvedValue({ ...user, nickname: null, description: null, club: null })
 
-        const result = await service.update('u1', { nickname: '   ', description: '  ', club: '  ' }, 1)
+        const result = await service.update(1, { nickname: '   ', description: '  ', club: '  ' })
 
         expect(repo.save).toHaveBeenCalled()
         expect(result).toEqual({ ...user, nickname: null, description: null, club: null })
@@ -188,7 +177,7 @@ describe('UsersService', () => {
             club: 'old',
             isVerified: false,
         } as User
-        jest.spyOn(service, 'findByUsername').mockResolvedValue(user)
+        jest.spyOn(service, 'findById').mockResolvedValue(user)
         repo.save.mockResolvedValue({
             ...user,
             studentNumber: '30201',
@@ -196,15 +185,11 @@ describe('UsersService', () => {
             club: 'robot',
         })
 
-        const result = await service.update(
-            'u1',
-            {
-                studentNumber: '30201',
-                department: 3,
-                club: 'robot',
-            },
-            1,
-        )
+        const result = await service.update(1, {
+            studentNumber: '30201',
+            department: 3,
+            club: 'robot',
+        })
 
         expect(repo.save).toHaveBeenCalledWith(
             expect.objectContaining({

@@ -15,6 +15,7 @@ describe('AuthController', () => {
             refresh: jest.fn(),
             logout: jest.fn(),
             getMe: jest.fn(),
+            updateMe: jest.fn(),
         } as unknown as jest.Mocked<AuthService>
 
         jwtService = {
@@ -119,6 +120,15 @@ describe('AuthController', () => {
         authService.getMe.mockResolvedValue({ id: 1 } as never)
 
         const result = await controller.getMe(req)
+        expect(result).toEqual({ id: 1 })
+    })
+
+    it('updateMe delegates to AuthService', async () => {
+        authService.updateMe.mockResolvedValue({ id: 1 } as never)
+
+        const result = await controller.updateMe({ nickname: 'n' } as never, { user: { userId: 1 } } as any)
+
+        expect(authService.updateMe).toHaveBeenCalledWith(1, { nickname: 'n' })
         expect(result).toEqual({ id: 1 })
     })
 
