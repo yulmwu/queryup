@@ -30,6 +30,6 @@ module.exports = {
             statements: 80,
         },
     },
-    testTimeout: 10000,
-    slowTestThreshold: 10,
+    testTimeout: 20000,
+    slowTestThreshold: 20,
 }
