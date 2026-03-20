@@ -15,9 +15,9 @@ export class TopicsService {
     ) {}
 
     async create(userId: number, dto: TopicCreateDto) {
-        const creator = await this.usersService.findById(userId)
         const existing = await this.topicRepo.findOne({ where: { slug: dto.slug } })
         if (existing) throw new ConflictException('Slug already exists')
+        const creator = await this.usersService.findById(userId)
 
         const topic = this.topicRepo.create({
             slug: dto.slug,

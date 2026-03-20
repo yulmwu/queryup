@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IntersectionType, PartialType } from '@nestjs/swagger'
 import { PostContentDto, PostTitleDto } from '../dto/posts.dto'
-import { UserBriefResponseDto, UserResponseDto } from 'modules/users/dto'
+import { UserResponseDto } from 'modules/users/dto'
 import { PageMetaDto } from 'common/dto'
+import { CommunityUserBriefDto } from '../dto/community-user.dto'
 
 export class GeneralPostCreateDto extends IntersectionType(PostTitleDto, PostContentDto) {}
 
 export class GeneralPostUpdateDto extends PartialType(IntersectionType(PostTitleDto, PostContentDto)) {}
 
-export class GeneralPostAuthorBriefDto extends IntersectionType(UserBriefResponseDto) {}
+export class GeneralPostAuthorBriefDto extends IntersectionType(CommunityUserBriefDto) {}
 
 export class GeneralPostAuthorDetailDto extends IntersectionType(UserResponseDto) {}
 

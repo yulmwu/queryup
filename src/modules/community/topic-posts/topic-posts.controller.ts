@@ -43,8 +43,7 @@ export class TopicPostsController {
     @Get(':id')
     @ApiOperation({ summary: 'Get topic post detail' })
     @ApiResponse({ status: 200, description: 'Return topic post detail.', type: TopicPostDetailDto })
-    @ApiNotFoundResponse({ description: 'Topic not found.' })
-    @ApiNotFoundResponse({ description: 'Post not found.' })
+    @ApiNotFoundResponse({ description: 'Topic or post not found.' })
     findOne(@Param('slug') slug: string, @Param('id', ParseIntPipe) id: number) {
         return this.topicPostsService.findOne(slug, id)
     }

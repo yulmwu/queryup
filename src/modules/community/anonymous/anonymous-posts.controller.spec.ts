@@ -32,10 +32,9 @@ describe('AnonymousPostsController', () => {
         expect(result).toEqual({ id: 1 })
     })
 
-    it('create uses x-forwarded-for', async () => {
+    it('create uses req.ip', async () => {
         service.create.mockResolvedValue({ id: 1 } as never)
         const req = {
-            headers: { 'x-forwarded-for': '123.456.78.90, 10.0.0.1' },
             ip: '9.9.9.9',
         } as any
 
@@ -44,14 +43,11 @@ describe('AnonymousPostsController', () => {
             req,
         )
 
-        expect(service.create).toHaveBeenCalledWith(
-            { title: 't', content: 'c', authorName: 'a', password: 'p' },
-            '123.456.78.90',
-        )
+        expect(service.create).toHaveBeenCalledWith({ title: 't', content: 'c', authorName: 'a', password: 'p' }, '9.9.9.9')
         expect(result).toEqual({ id: 1 })
     })
 
-    it('create falls back to ip when forwarded missing', async () => {
+    it('create falls back to 0.0.0.0 when ip missing', async () => {
         service.create.mockResolvedValue({ id: 1 } as never)
         const req = { headers: {}, ip: undefined } as any
 

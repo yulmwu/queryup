@@ -12,11 +12,6 @@ import {
 import { Request as ExpressRequest } from 'express'
 
 const extractIp = (req: ExpressRequest) => {
-    const forwarded = req.headers['x-forwarded-for']
-    if (typeof forwarded === 'string' && forwarded.length > 0) {
-        return forwarded.split(',')[0].trim()
-    }
-
     return req.ip ?? '0.0.0.0'
 }
 
