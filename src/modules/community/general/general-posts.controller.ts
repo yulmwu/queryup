@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, Request, UseGuards } from '@nestjs/common'
 import {
     ApiBearerAuth,
     ApiForbiddenResponse,
@@ -35,7 +35,7 @@ export class GeneralPostsController {
     @ApiOperation({ summary: 'Get general board post detail' })
     @ApiResponse({ status: 200, description: 'Return general board post detail.', type: GeneralPostDetailDto })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    findOne(@Param('id') id: number) {
+    findOne(@Param('id', ParseIntPipe) id: number) {
         return this.generalPostsService.findOne(id)
     }
 
@@ -57,7 +57,7 @@ export class GeneralPostsController {
     @ApiUnauthorizedResponse({ description: 'User is not authenticated.' })
     @ApiForbiddenResponse({ description: 'You are not allowed to update this post.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    update(@Param('id') id: number, @Body() dto: GeneralPostUpdateDto, @Request() req: AuthenticatedRequest) {
+    update(@Param('id', ParseIntPipe) id: number, @Body() dto: GeneralPostUpdateDto, @Request() req: AuthenticatedRequest) {
         return this.generalPostsService.update(id, req.user.userId, dto)
     }
 
@@ -70,7 +70,7 @@ export class GeneralPostsController {
     @ApiForbiddenResponse({ description: 'You are not allowed to delete this post.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
     @HttpCode(204)
-    async remove(@Param('id') id: number, @Request() req: AuthenticatedRequest) {
+    async remove(@Param('id', ParseIntPipe) id: number, @Request() req: AuthenticatedRequest) {
         await this.generalPostsService.remove(id, req.user.userId)
     }
 }
