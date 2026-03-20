@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm'
 import { Exclude } from 'class-transformer'
 
 export enum UserRole {
@@ -62,6 +62,6 @@ export class User {
     @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
     role: UserRole
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 }
