@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Request } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, Request } from '@nestjs/common'
 import { ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { PageQueryDto } from 'common/dto'
 import { AnonymousPostsService } from './anonymous-posts.service'
@@ -36,7 +36,7 @@ export class AnonymousPostsController {
     @ApiOperation({ summary: 'Get anonymous board post detail' })
     @ApiResponse({ status: 200, description: 'Return anonymous board post detail.', type: AnonymousPostDetailDto })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    findOne(@Param('id') id: number) {
+    findOne(@Param('id', ParseIntPipe) id: number) {
         return this.anonPostsService.findOne(id)
     }
 
@@ -52,7 +52,7 @@ export class AnonymousPostsController {
     @ApiResponse({ status: 200, description: 'Anonymous post updated.', type: AnonymousPostDetailDto })
     @ApiUnauthorizedResponse({ description: 'Invalid password.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    update(@Param('id') id: number, @Body() dto: AnonymousPostUpdateDto) {
+    update(@Param('id', ParseIntPipe) id: number, @Body() dto: AnonymousPostUpdateDto) {
         return this.anonPostsService.update(id, dto)
     }
 
@@ -62,7 +62,7 @@ export class AnonymousPostsController {
     @ApiUnauthorizedResponse({ description: 'Invalid password.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
     @HttpCode(204)
-    async remove(@Param('id') id: number, @Body() dto: AnonymousPostDeleteDto) {
+    async remove(@Param('id', ParseIntPipe) id: number, @Body() dto: AnonymousPostDeleteDto) {
         await this.anonPostsService.remove(id, dto)
     }
 }
