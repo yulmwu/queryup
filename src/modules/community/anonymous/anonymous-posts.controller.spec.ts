@@ -43,7 +43,10 @@ describe('AnonymousPostsController', () => {
             req,
         )
 
-        expect(service.create).toHaveBeenCalledWith({ title: 't', content: 'c', authorName: 'a', password: 'p' }, '9.9.9.9')
+        expect(service.create).toHaveBeenCalledWith(
+            { title: 't', content: 'c', authorName: 'a', password: 'p' },
+            '9.9.9.9',
+        )
         expect(result).toEqual({ id: 1 })
     })
 

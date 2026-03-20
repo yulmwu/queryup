@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, Request, UseGuards } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    Query,
+    Request,
+    UseGuards,
+} from '@nestjs/common'
 import {
     ApiBearerAuth,
     ApiForbiddenResponse,
@@ -57,7 +70,11 @@ export class GeneralPostsController {
     @ApiUnauthorizedResponse({ description: 'User is not authenticated.' })
     @ApiForbiddenResponse({ description: 'You are not allowed to update this post.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    update(@Param('id', ParseIntPipe) id: number, @Body() dto: GeneralPostUpdateDto, @Request() req: AuthenticatedRequest) {
+    update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: GeneralPostUpdateDto,
+        @Request() req: AuthenticatedRequest,
+    ) {
         return this.generalPostsService.update(id, req.user.userId, dto)
     }
 
