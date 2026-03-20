@@ -11,7 +11,7 @@
         "dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
-        "typeorm": "typeorm-ts-node-commonjs",
+        "typeorm": "NODE_OPTIONS=--require=tsconfig-paths/register typeorm-ts-node-commonjs",
         "migration:generate": "npm run typeorm -- migration:generate src/migrations/Init --dataSource=typeorm.config.ts",
         "migration:run": "npm run typeorm -- migration:run --dataSource=typeorm.config.ts",
         "migration:revert": "npm run typeorm -- migration:revert --dataSource=typeorm.config.ts",
@@ -56,7 +56,7 @@
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "uuid": "^13.0.0",
-        "yargs": "^18.0.0"
+        "yargs": "^17.7.2"
     },
     "devDependencies": {
         "@nestjs/cli": "^11.0.0",
