@@ -1,0 +1,219 @@
+:root {
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #ffffff;
+    color: #111111;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #111111;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 12px;
+    color: #666666;
+}
+
+.auth-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.tab {
+    padding: 8px 12px;
+    border: 1px solid #d4d4d4;
+    border-radius: 6px;
+    background: #f8f8f8;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.tab.active {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.panel {
+    display: none;
+}
+
+.panel.active {
+    display: block;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 16px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+label {
+    font-size: 13px;
+    color: #333333;
+}
+
+input,
+textarea,
+button {
+    font-size: 13px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+button {
+    padding: 8px 12px;
+    border: 1px solid #999999;
+    border-radius: 4px;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #eeeeee;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+p {
+    margin: 0;
+}
+
+.muted {
+    color: #666666;
+    font-size: 13px;
+}
+
+.output-wrap {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+}
+
+.output {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    min-height: 180px;
+    white-space: pre-wrap;
+    font-size: 12px;
+    color: #222222;
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .auth-strip {
+        width: 100%;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+}

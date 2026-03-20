@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sesori MVP</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="logo">S</span>
+            <div>
+                <div class="title">Sesori</div>
+            </div>
+        </div>
+        <div class="auth-strip">
+            <input id="accessToken" type="text" placeholder="Access token" />
+            <button id="saveToken">Save</button>
+            <button id="clearToken">Clear</button>
+        </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="home">Home</button>
+        <button class="tab" data-tab="general">General</button>
+        <button class="tab" data-tab="anonymous">Anonymous</button>
+        <button class="tab" data-tab="topics">Topics</button>
+        <button class="tab" data-tab="account">Account</button>
+        <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <main class="container">
+        <section class="panel active" data-panel="home">
+            <div class="hero">
+                <div class="quick-actions">
+                    <button id="generalListBtn">Load General Posts</button>
+                    <button id="anonListBtn">Load Anonymous Posts</button>
+                    <button id="topicListBtn">Load Topics</button>
+                </div>
+            </div>
+            <div class="output-wrap">
+                <h2>Latest Output</h2>
+                <pre id="output" class="output"></pre>
+            </div>
+        </section>
+
+        <section class="panel" data-panel="general">
+            <div class="layout">
+                <div>
+                    <h2>General Board</h2>
+                    <div class="card">
+                        <div class="row">
+                            <input id="generalPage" type="number" placeholder="page" value="1" />
+                            <input id="generalSize" type="number" placeholder="size" value="20" />
+                            <button id="generalListBtn2">Load</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Post Detail</h3>
+                        <div class="row">
+                            <input id="generalDetailId" type="number" placeholder="post id" />
+                            <button id="generalDetailBtn">Load</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Create Post</h3>
+                    <form id="generalCreateForm" class="card">
+                        <input name="title" placeholder="title" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                    <div class="card">
+                        <h3>Response</h3>
+                        <pre id="generalOutput" class="output"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" data-panel="anonymous">
+            <div class="layout">
+                <div>
+                    <h2>Anonymous Board</h2>
+                    <div class="card">
+                        <div class="row">
+                            <input id="anonPage" type="number" placeholder="page" value="1" />
+                            <input id="anonSize" type="number" placeholder="size" value="20" />
+                            <button id="anonListBtn2">Load</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Post Detail</h3>
+                        <div class="row">
+                            <input id="anonDetailId" type="number" placeholder="post id" />
+                            <button id="anonDetailBtn">Load</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Create Post</h3>
+                    <form id="anonCreateForm" class="card">
+                        <input name="authorName" placeholder="authorName" required />
+                        <input name="password" placeholder="password" type="password" required />
+                        <input name="title" placeholder="title" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                    <div class="card">
+                        <h3>Response</h3>
+                        <pre id="anonOutput" class="output"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" data-panel="topics">
+            <div class="layout">
+                <div>
+                    <h2>Topics</h2>
+                    <div class="card">
+                        <div class="row">
+                            <input id="topicPage" type="number" placeholder="page" value="1" />
+                            <input id="topicSize" type="number" placeholder="size" value="20" />
+                            <button id="topicListBtn2">Load</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Topic Detail</h3>
+                        <div class="row">
+                            <input id="topicDetailSlug" placeholder="topic slug" />
+                            <button id="topicDetailBtn">Load</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Topic Posts</h3>
+                        <div class="row">
+                            <input id="topicPostsSlug" placeholder="topic slug" />
+                            <input id="topicPostsPage" type="number" placeholder="page" value="1" />
+                            <input id="topicPostsSize" type="number" placeholder="size" value="20" />
+                            <button id="topicPostsListBtn">Load</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Topic Post Detail</h3>
+                        <div class="row">
+                            <input id="topicPostDetailSlug" placeholder="topic slug" />
+                            <input id="topicPostDetailId" type="number" placeholder="post id" />
+                            <button id="topicPostDetailBtn">Load</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Create Topic</h3>
+                    <form id="topicCreateForm" class="card">
+                        <input name="slug" placeholder="slug (lowercase, numbers, -)" required />
+                        <input name="name" placeholder="name" required />
+                        <input name="description" placeholder="description" required />
+                        <button type="submit">Create</button>
+                    </form>
+                    <h3>Create Topic Post</h3>
+                    <form id="topicPostsCreateForm" class="card">
+                        <input name="slug" placeholder="topic slug" required />
+                        <input name="title" placeholder="title" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                    <div class="card">
+                        <h3>Response</h3>
+                        <pre id="topicOutput" class="output"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" data-panel="account">
+            <div class="layout">
+                <div>
+                    <h2>Account</h2>
+                    <form id="loginForm" class="card">
+                        <h3>Login</h3>
+                        <input name="username" placeholder="username" required />
+                        <input name="password" placeholder="password" type="password" required />
+                        <button type="submit">Login</button>
+                    </form>
+                    <div class="card">
+                        <h3>Session</h3>
+                        <div class="row">
+                            <button id="meBtn">Get Me</button>
+                            <button id="refreshBtn">Refresh</button>
+                            <button id="logoutBtn">Logout</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Response</h3>
+                        <pre id="accountOutput" class="output"></pre>
+                    </div>
+                </div>
+                <div>
+                    <h2>Register</h2>
+                    <form id="registerForm" class="card">
+                        <input name="username" placeholder="username" required />
+                        <input name="password" placeholder="password" type="password" required />
+                        <input name="email" placeholder="email" type="email" required />
+                        <input name="studentNumber" placeholder="studentNumber (e.g. 30201)" required />
+                        <input name="department" placeholder="department (1-4)" type="number" min="1" max="4" required />
+                        <input name="nickname" placeholder="nickname (optional)" />
+                        <input name="description" placeholder="description (optional)" />
+                        <input name="club" placeholder="club (optional)" />
+                        <button type="submit">Register</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" data-panel="settings">
+            <div class="layout">
+                <div>
+                    <h2>Settings</h2>
+                    <div class="card">
+                        <label for="baseUrl">Base URL</label>
+                        <input id="baseUrl" type="text" value="http://localhost:3000/api" />
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
