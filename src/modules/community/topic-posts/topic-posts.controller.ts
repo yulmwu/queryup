@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Param,
+    Post,
+    Put,
+    Query,
+    Request,
+    UseGuards,
+    ParseIntPipe,
+} from '@nestjs/common'
 import {
     ApiBearerAuth,
     ApiOperation,
@@ -32,7 +45,7 @@ export class TopicPostsController {
     @ApiResponse({ status: 200, description: 'Return topic post detail.', type: TopicPostDetailDto })
     @ApiNotFoundResponse({ description: 'Topic not found.' })
     @ApiNotFoundResponse({ description: 'Post not found.' })
-    findOne(@Param('slug') slug: string, @Param('id') id: number) {
+    findOne(@Param('slug') slug: string, @Param('id', ParseIntPipe) id: number) {
         return this.topicPostsService.findOne(slug, id)
     }
 
@@ -57,7 +70,7 @@ export class TopicPostsController {
     @ApiNotFoundResponse({ description: 'Topic or post not found.' })
     update(
         @Param('slug') slug: string,
-        @Param('id') id: number,
+        @Param('id', ParseIntPipe) id: number,
         @Body() dto: TopicPostUpdateDto,
         @Request() req: AuthenticatedRequest,
     ) {
@@ -73,7 +86,11 @@ export class TopicPostsController {
     @ApiForbiddenResponse({ description: 'You are not allowed to delete this post.' })
     @ApiNotFoundResponse({ description: 'Topic or post not found.' })
     @HttpCode(204)
-    async remove(@Param('slug') slug: string, @Param('id') id: number, @Request() req: AuthenticatedRequest) {
+    async remove(
+        @Param('slug') slug: string,
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req: AuthenticatedRequest,
+    ) {
         await this.topicPostsService.remove(slug, id, req.user.userId)
     }
 }
