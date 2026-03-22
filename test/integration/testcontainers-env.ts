@@ -9,12 +9,12 @@ type Started = {
 const hasEnv = () =>
     Boolean(
         process.env.DATABASE_HOST &&
-            process.env.DATABASE_PORT &&
-            process.env.DATABASE_USERNAME &&
-            process.env.DATABASE_PASSWORD &&
-            process.env.DATABASE_NAME &&
-            process.env.REDIS_HOST &&
-            process.env.REDIS_PORT,
+        process.env.DATABASE_PORT &&
+        process.env.DATABASE_USERNAME &&
+        process.env.DATABASE_PASSWORD &&
+        process.env.DATABASE_NAME &&
+        process.env.REDIS_HOST &&
+        process.env.REDIS_PORT,
     )
 
 export const ensureTestcontainersEnv = async () => {

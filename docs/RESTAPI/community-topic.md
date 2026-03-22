@@ -1,388 +1,9 @@
 ---
-title: Community
-nav_order: 4
+title: Community - Topic
+nav_order: 6
 ---
 
-# Community
-
-## General Board
-
-### List Posts
-
-`GET /community/general/posts`
-
-Query
-
-- `page` (optional, default 1)
-- `size` (optional, default 20, max 50)
-
-Authorization
-
-- None
-
-Response 200
-
-```json
-{
-    "items": [
-        {
-            "id": 1,
-            "title": "Hello world",
-            "author": {
-                "id": 1,
-                "username": "user1",
-                "nickname": "홍길동",
-                "description": "Hello",
-                "profileImage": "uploads/profile/1/profile.png",
-                "role": 1
-            },
-            "createdAt": "2024-01-01T00:00:00.000Z",
-            "updatedAt": "2024-01-01T00:00:00.000Z"
-        }
-    ],
-    "meta": { "page": 1, "size": 20, "total": 1 }
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for invalid query or extra fields
-- 500 `Internal Server Error`
-
-### Get Post Detail
-
-`GET /community/general/posts/:id`
-
-Authorization
-
-- None
-
-Response 200
-
-```json
-{
-    "id": 1,
-    "title": "Hello world",
-    "content": "This is the content.",
-    "author": {
-        "id": 1,
-        "username": "user1",
-        "nickname": "홍길동",
-        "email": "user1@example.com",
-        "description": "Hello",
-        "profileImage": "uploads/profile/1/profile.png",
-        "studentNumber": "30201",
-        "department": 1,
-        "status": 1,
-        "club": "Robot Club",
-        "isVerified": false,
-        "createdAt": "2024-01-01T00:00:00.000Z",
-        "role": 1
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
-### Create Post
-
-`POST /community/general/posts`
-
-Authorization
-
-- JWT required
-
-Request
-
-```json
-{
-    "title": "Hello world",
-    "content": "This is the content."
-}
-```
-
-Response 201
-
-```json
-{
-    "id": 1,
-    "title": "Hello world",
-    "content": "This is the content.",
-    "author": {
-        "id": 1,
-        "username": "user1",
-        "nickname": "홍길동",
-        "email": "user1@example.com",
-        "description": "Hello",
-        "profileImage": "uploads/profile/1/profile.png",
-        "studentNumber": "30201",
-        "department": 1,
-        "status": 1,
-        "club": "Robot Club",
-        "isVerified": false,
-        "createdAt": "2024-01-01T00:00:00.000Z",
-        "role": 1
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for validation failures or extra fields
-- 401 `Unauthorized` when access token is missing or invalid
-- 500 `Internal Server Error`
-
-### Update Post
-
-`PUT /community/general/posts/:id`
-
-Authorization
-
-- JWT required
-- Self-only
-
-Request
-
-```json
-{
-    "title": "Updated title",
-    "content": "Updated content."
-}
-```
-
-Response 200
-
-```json
-{
-    "id": 1,
-    "title": "Updated title",
-    "content": "Updated content.",
-    "author": {
-        "id": 1,
-        "username": "user1",
-        "nickname": "홍길동",
-        "email": "user1@example.com",
-        "description": "Hello",
-        "profileImage": "uploads/profile/1/profile.png",
-        "studentNumber": "30201",
-        "department": 1,
-        "status": 1,
-        "club": "Robot Club",
-        "isVerified": false,
-        "createdAt": "2024-01-01T00:00:00.000Z",
-        "role": 1
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-02T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for validation failures or extra fields
-- 401 `Unauthorized` when access token is missing or invalid
-- 403 `Forbidden` when trying to update another user's post
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
-### Delete Post
-
-`DELETE /community/general/posts/:id`
-
-Authorization
-
-- JWT required
-- Self-only
-
-Response 204
-
-(empty body)
-
-Errors:
-
-- 401 `Unauthorized` when access token is missing or invalid
-- 403 `Forbidden` when trying to delete another user's post
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
----
-
-## Anonymous Board
-
-### List Posts
-
-`GET /community/anonymous/posts`
-
-Query
-
-- `page` (optional, default 1)
-- `size` (optional, default 20, max 50)
-
-Authorization
-
-- None
-
-Response 200
-
-```json
-{
-    "items": [
-        {
-            "id": 1,
-            "title": "Hello world",
-            "authorName": "익명123",
-            "ipMasked": "123.456.*.*",
-            "createdAt": "2024-01-01T00:00:00.000Z",
-            "updatedAt": "2024-01-01T00:00:00.000Z"
-        }
-    ],
-    "meta": { "page": 1, "size": 20, "total": 1 }
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for invalid query or extra fields
-- 500 `Internal Server Error`
-
-### Get Post Detail
-
-`GET /community/anonymous/posts/:id`
-
-Authorization
-
-- None
-
-Response 200
-
-```json
-{
-    "id": 1,
-    "title": "Hello world",
-    "content": "This is the content.",
-    "authorName": "익명123",
-    "ipMasked": "123.456.*.*",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
-### Create Post
-
-`POST /community/anonymous/posts`
-
-Authorization
-
-- None
-
-Request
-
-```json
-{
-    "title": "Hello world",
-    "content": "This is the content.",
-    "authorName": "익명123",
-    "password": "secret1234"
-}
-```
-
-Response 201
-
-```json
-{
-    "id": 1,
-    "title": "Hello world",
-    "content": "This is the content.",
-    "authorName": "익명123",
-    "ipMasked": "123.456.*.*",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for validation failures or extra fields
-- 500 `Internal Server Error`
-
-### Update Post
-
-`PUT /community/anonymous/posts/:id`
-
-Authorization
-
-- None
-
-Request
-
-```json
-{
-    "title": "Updated title",
-    "content": "Updated content.",
-    "password": "secret1234"
-}
-```
-
-Response 200
-
-```json
-{
-    "id": 1,
-    "title": "Updated title",
-    "content": "Updated content.",
-    "authorName": "익명123",
-    "ipMasked": "123.456.*.*",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-02T00:00:00.000Z"
-}
-```
-
-Errors:
-
-- 400 `Bad Request` for validation failures or extra fields
-- 401 `Unauthorized` when password is invalid
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
-### Delete Post
-
-`DELETE /community/anonymous/posts/:id`
-
-Authorization
-
-- None
-
-Request
-
-```json
-{
-    "password": "secret1234"
-}
-```
-
-Response 204
-
-(empty body)
-
-Errors:
-
-- 401 `Unauthorized` when password is invalid
-- 404 `Not Found` when post does not exist
-- 500 `Internal Server Error`
-
----
+# Community - Topic
 
 ## Topics
 
@@ -875,3 +496,72 @@ Errors:
 - 403 `Forbidden` when trying to delete another user's post
 - 404 `Not Found` when topic or post does not exist
 - 500 `Internal Server Error`
+
+---
+
+## Topic Post Comments
+
+Notes
+
+- Pagination: top-level comments use page pagination; replies use cursor pagination.
+- Deleted comments with no replies are omitted.
+- Deleted comments with replies are returned with `content: null` and `isDeleted: true`.
+- Deleted replies are omitted.
+
+### List Comments
+
+`GET /community/topics/:slug/posts/:postId/comments`
+
+### List Replies
+
+`GET /community/topics/:slug/posts/:postId/comments/:commentId/replies`
+
+### Create Comment
+
+`POST /community/topics/:slug/posts/:postId/comments`
+
+Authorization
+
+- JWT required
+
+Request
+
+```json
+{
+    "content": "Nice post!"
+}
+```
+
+### Create Reply
+
+`POST /community/topics/:slug/posts/:postId/comments/:commentId/replies`
+
+Authorization
+
+- JWT required
+
+Request
+
+```json
+{
+    "content": "Thanks!"
+}
+```
+
+### Update Comment
+
+`PUT /community/topics/:slug/posts/:postId/comments/:commentId`
+
+Authorization
+
+- JWT required
+- Self-only
+
+### Delete Comment
+
+`DELETE /community/topics/:slug/posts/:postId/comments/:commentId`
+
+Authorization
+
+- JWT required
+- Self-only

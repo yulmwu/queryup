@@ -69,3 +69,12 @@ export class TopicDescriptionDto {
     @MaxLength(255)
     description: string
 }
+
+export class CommentContentDto {
+    @ApiProperty({ description: 'Comment content.', example: 'Nice post!' })
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/\S/, { message: 'Content must contain at least one non-space character.' })
+    content: string
+}
