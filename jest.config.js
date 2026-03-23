@@ -18,6 +18,7 @@ module.exports = {
         '!src/**/*.module.ts',
         '!src/**/*.dto.ts',
         '!src/**/dto/**',
+        '!src/migrations/**',
         '!src/common/types/**',
         '!src/common/constants/**',
     ],

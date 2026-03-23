@@ -72,6 +72,22 @@ describe('TopicPostCommentsService', () => {
         await expect(service.createReply('slug', 2, 3, 1, { content: 'c' })).rejects.toBeInstanceOf(NotFoundException)
     })
 
+    it('createReply saves reply', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1 })
+        postRepo.findOne.mockResolvedValue({ id: 2 })
+        commentRepo.findOne.mockResolvedValue({ id: 3, parentId: null })
+        usersService.findById.mockResolvedValue({ id: 1 } as never)
+        commentRepo.create.mockReturnValue({ id: 4 })
+        commentRepo.save.mockResolvedValue({ id: 4 })
+
+        const result = await service.createReply('slug', 2, 3, 1, { content: 'c' })
+
+        expect(usersService.findById).toHaveBeenCalledWith(1)
+        expect(commentRepo.create).toHaveBeenCalled()
+        expect(commentRepo.save).toHaveBeenCalledWith({ id: 4 })
+        expect(result).toEqual({ id: 4 })
+    })
+
     it('list returns reply counts', async () => {
         topicRepo.findOne.mockResolvedValue({ id: 1 })
         postRepo.findOne.mockResolvedValue({ id: 2 })
@@ -112,5 +128,64 @@ describe('TopicPostCommentsService', () => {
         commentRepo.findOne.mockResolvedValueOnce({ id: 10 }).mockResolvedValueOnce(null)
 
         await expect(service.listReplies('slug', 2, 10, 999, 10)).rejects.toBeInstanceOf(NotFoundException)
+    })
+
+    it('listReplies returns nextCursor when more', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1 })
+        postRepo.findOne.mockResolvedValue({ id: 2 })
+        commentRepo.findOne.mockResolvedValueOnce({ id: 10 }).mockResolvedValueOnce({
+            id: 99,
+            createdAt: new Date('2024-01-02T00:00:00.000Z'),
+        })
+        const repliesQb = createMockQueryBuilder()
+        repliesQb.getMany.mockResolvedValue([
+            {
+                id: 7,
+                content: 'r1',
+                author: { id: 1, username: 'u', role: 1 },
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            },
+            {
+                id: 6,
+                content: 'r2',
+                author: { id: 1, username: 'u', role: 1 },
+                createdAt: new Date('2023-12-31T00:00:00.000Z'),
+                updatedAt: new Date('2023-12-31T00:00:00.000Z'),
+            },
+        ])
+        commentRepo.createQueryBuilder.mockImplementationOnce(() => repliesQb)
+
+        const result = await service.listReplies('slug', 2, 10, 99, 1)
+
+        expect(repliesQb.andWhere).toHaveBeenCalled()
+        expect(result.meta.nextCursor).toBe(7)
+        expect(result.items).toHaveLength(1)
+    })
+
+    it('update saves when owner', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1 })
+        postRepo.findOne.mockResolvedValue({ id: 2 })
+        const comment = { id: 1, author: { id: 1 }, content: 'c' }
+        commentRepo.findOne.mockResolvedValue(comment)
+        commentRepo.save.mockResolvedValue({ id: 1, content: 'c2' })
+
+        const result = await service.update('slug', 2, 1, 1, { content: 'c2' })
+
+        expect(commentRepo.save).toHaveBeenCalledWith(comment)
+        expect(result).toEqual({ id: 1, content: 'c2' })
+    })
+
+    it('remove marks deleted and saves', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1 })
+        postRepo.findOne.mockResolvedValue({ id: 2 })
+        const comment = { id: 1, author: { id: 1 }, isDeleted: false, content: 'c' }
+        commentRepo.findOne.mockResolvedValue(comment)
+
+        await service.remove('slug', 2, 1, 1)
+
+        expect(comment.isDeleted).toBe(true)
+        expect(comment.content).toBeNull()
+        expect(commentRepo.save).toHaveBeenCalledWith(comment)
     })
 })
