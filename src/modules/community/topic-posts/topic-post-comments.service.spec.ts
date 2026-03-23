@@ -10,6 +10,7 @@ const createMockRepo = <T>() => ({
     create: jest.fn(),
     save: jest.fn(),
     findOne: jest.fn(),
+    count: jest.fn(),
     createQueryBuilder: jest.fn(),
 })
 
@@ -77,15 +78,24 @@ describe('TopicPostCommentsService', () => {
         postRepo.findOne.mockResolvedValue({ id: 2 })
         commentRepo.findOne.mockResolvedValue({ id: 3, parentId: null })
         usersService.findById.mockResolvedValue({ id: 1 } as never)
-        commentRepo.create.mockReturnValue({ id: 4 })
-        commentRepo.save.mockResolvedValue({ id: 4 })
+        const saved = {
+            id: 4,
+            parentId: 3,
+            content: 'c',
+            author: { id: 1, username: 'u', role: 1 },
+            isDeleted: false,
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }
+        commentRepo.create.mockReturnValue(saved)
+        commentRepo.save.mockResolvedValue(saved)
 
         const result = await service.createReply('slug', 2, 3, 1, { content: 'c' })
 
         expect(usersService.findById).toHaveBeenCalledWith(1)
         expect(commentRepo.create).toHaveBeenCalled()
-        expect(commentRepo.save).toHaveBeenCalledWith({ id: 4 })
-        expect(result).toEqual({ id: 4 })
+        expect(commentRepo.save).toHaveBeenCalledWith(saved)
+        expect(result).toEqual(expect.objectContaining({ id: 4, parentId: 3, content: 'c' }))
     })
 
     it('list returns reply counts', async () => {
@@ -166,14 +176,23 @@ describe('TopicPostCommentsService', () => {
     it('update saves when owner', async () => {
         topicRepo.findOne.mockResolvedValue({ id: 1 })
         postRepo.findOne.mockResolvedValue({ id: 2 })
-        const comment = { id: 1, author: { id: 1 }, content: 'c' }
+        const comment = {
+            id: 1,
+            parentId: null,
+            author: { id: 1, username: 'u', role: 1 },
+            content: 'c',
+            isDeleted: false,
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }
         commentRepo.findOne.mockResolvedValue(comment)
-        commentRepo.save.mockResolvedValue({ id: 1, content: 'c2' })
+        commentRepo.save.mockResolvedValue({ ...comment, content: 'c2' })
+        commentRepo.count.mockResolvedValue(0)
 
         const result = await service.update('slug', 2, 1, 1, { content: 'c2' })
 
         expect(commentRepo.save).toHaveBeenCalledWith(comment)
-        expect(result).toEqual({ id: 1, content: 'c2' })
+        expect(result).toEqual(expect.objectContaining({ id: 1, content: 'c2', replyCount: 0 }))
     })
 
     it('remove marks deleted and saves', async () => {

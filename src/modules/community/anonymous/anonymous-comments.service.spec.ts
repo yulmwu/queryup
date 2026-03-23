@@ -14,6 +14,7 @@ type MockRepo<T> = {
     create: jest.Mock
     save: jest.Mock
     findOne: jest.Mock
+    count: jest.Mock
     createQueryBuilder: jest.Mock
 }
 
@@ -21,6 +22,7 @@ const createMockRepo = <T>(): MockRepo<T> => ({
     create: jest.fn(),
     save: jest.fn(),
     findOne: jest.fn(),
+    count: jest.fn(),
     createQueryBuilder: jest.fn(),
 })
 
@@ -105,15 +107,32 @@ describe('AnonymousCommentsService', () => {
         postRepo.findOne.mockResolvedValue({ id: 1 })
         commentRepo.findOne.mockResolvedValue({ id: 10, parentId: null })
         ;(bcrypt.hash as jest.Mock).mockResolvedValue('hash')
-        commentRepo.create.mockReturnValue({ id: 2 })
-        commentRepo.save.mockResolvedValue({ id: 2 })
+        const saved = {
+            id: 2,
+            parentId: 10,
+            content: 'c',
+            authorName: 'anon',
+            ipAddress: '1.2.3.4',
+            isDeleted: false,
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }
+        commentRepo.create.mockReturnValue(saved)
+        commentRepo.save.mockResolvedValue(saved)
 
         const result = await service.createReply(1, 10, { content: 'c', authorName: 'anon', password: 'p' }, '1.2.3.4')
 
         expect(bcrypt.hash).toHaveBeenCalledWith('p', 10)
         expect(commentRepo.create).toHaveBeenCalled()
-        expect(commentRepo.save).toHaveBeenCalledWith({ id: 2 })
-        expect(result).toEqual({ id: 2 })
+        expect(commentRepo.save).toHaveBeenCalledWith(saved)
+        expect(result).toEqual(
+            expect.objectContaining({
+                id: 2,
+                parentId: 10,
+                content: 'c',
+                author: { authorName: 'anon', ipMasked: '1.2.*.*' },
+            }),
+        )
     })
 
     it('list returns reply counts', async () => {
@@ -203,14 +222,36 @@ describe('AnonymousCommentsService', () => {
     it('update succeeds with correct password', async () => {
         postRepo.findOne.mockResolvedValue({ id: 1 })
 
-        const qb = createMockQueryBuilder({ one: { id: 1, passwordHash: 'hash', content: 'c' } })
+        const qb = createMockQueryBuilder({
+            one: {
+                id: 1,
+                passwordHash: 'hash',
+                content: 'c',
+                parentId: null,
+                authorName: 'anon',
+                ipAddress: '1.2.3.4',
+                isDeleted: false,
+                createdAt: new Date('2024-01-01T00:00:00.000Z'),
+                updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+            },
+        })
         commentRepo.createQueryBuilder.mockReturnValue(qb)
         ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
 
-        commentRepo.save.mockResolvedValue({ id: 1, content: 'c2' })
+        commentRepo.save.mockResolvedValue({
+            id: 1,
+            content: 'c2',
+            parentId: null,
+            authorName: 'anon',
+            ipAddress: '1.2.3.4',
+            isDeleted: false,
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        })
+        commentRepo.count.mockResolvedValue(0)
 
         const result = await service.update(1, 1, { password: 'p', content: 'c2' })
-        expect(result).toEqual(expect.objectContaining({ id: 1, content: 'c2' }))
+        expect(result).toEqual(expect.objectContaining({ id: 1, content: 'c2', replyCount: 0 }))
     })
 
     it('remove throws when missing', async () => {

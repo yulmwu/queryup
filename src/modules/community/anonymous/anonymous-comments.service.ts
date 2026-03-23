@@ -45,7 +45,9 @@ export class AnonymousCommentsService {
             ipAddress,
         })
 
-        return this.commentRepo.save(comment)
+        const saved = await this.commentRepo.save(comment)
+
+        return this.toCommentItem(saved, 0)
     }
 
     async createReply(postId: number, commentId: number, dto: AnonymousCommentCreateDto, ipAddress: string) {
@@ -64,7 +66,9 @@ export class AnonymousCommentsService {
             ipAddress,
         })
 
-        return this.commentRepo.save(reply)
+        const saved = await this.commentRepo.save(reply)
+
+        return this.toReplyItem(saved)
     }
 
     async list(postId: number, page?: number, size?: number) {
@@ -202,7 +206,17 @@ export class AnonymousCommentsService {
 
         if (dto.content !== undefined) comment.content = dto.content
 
-        return this.commentRepo.save(comment)
+        const saved = await this.commentRepo.save(comment)
+
+        if (saved.parentId) {
+            return this.toReplyItem(saved)
+        }
+
+        const replyCount = await this.commentRepo.count({
+            where: { parent: { id: saved.id }, isDeleted: false },
+        })
+
+        return this.toCommentItem(saved, replyCount)
     }
 
     async remove(postId: number, commentId: number, dto: AnonymousCommentDeleteDto) {
@@ -225,5 +239,35 @@ export class AnonymousCommentsService {
         comment.content = null
 
         await this.commentRepo.save(comment)
+    }
+
+    private toCommentItem(comment: AnonymousComment, replyCount: number) {
+        return {
+            id: comment.id,
+            parentId: null,
+            content: comment.isDeleted ? null : comment.content,
+            isDeleted: comment.isDeleted,
+            replyCount,
+            author: {
+                authorName: comment.authorName,
+                ipMasked: maskIp(comment.ipAddress),
+            },
+            createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
+        }
+    }
+
+    private toReplyItem(reply: AnonymousComment) {
+        return {
+            id: reply.id,
+            parentId: reply.parentId ?? 0,
+            content: reply.content ?? '',
+            author: {
+                authorName: reply.authorName,
+                ipMasked: maskIp(reply.ipAddress),
+            },
+            createdAt: reply.createdAt,
+            updatedAt: reply.updatedAt,
+        }
     }
 }

@@ -46,7 +46,10 @@ export class TopicPostCommentsService {
             author,
         })
 
-        return this.commentRepo.save(comment)
+        const saved = await this.commentRepo.save(comment)
+        saved.author = author
+
+        return this.toCommentItem(saved, 0)
     }
 
     async createReply(slug: string, postId: number, commentId: number, userId: number, dto: TopicPostCommentCreateDto) {
@@ -63,7 +66,10 @@ export class TopicPostCommentsService {
             author,
         })
 
-        return this.commentRepo.save(reply)
+        const saved = await this.commentRepo.save(reply)
+        saved.author = author
+
+        return this.toReplyItem(saved)
     }
 
     async list(slug: string, postId: number, page?: number, size?: number) {
@@ -190,7 +196,17 @@ export class TopicPostCommentsService {
 
         if (dto.content !== undefined) comment.content = dto.content
 
-        return this.commentRepo.save(comment)
+        const saved = await this.commentRepo.save(comment)
+
+        if (saved.parentId) {
+            return this.toReplyItem(saved)
+        }
+
+        const replyCount = await this.commentRepo.count({
+            where: { parent: { id: saved.id }, isDeleted: false },
+        })
+
+        return this.toCommentItem(saved, replyCount)
     }
 
     async remove(slug: string, postId: number, commentId: number, userId: number) {
@@ -206,5 +222,29 @@ export class TopicPostCommentsService {
         comment.isDeleted = true
         comment.content = null
         await this.commentRepo.save(comment)
+    }
+
+    private toCommentItem(comment: TopicPostComment, replyCount: number) {
+        return {
+            id: comment.id,
+            parentId: null,
+            content: comment.isDeleted ? null : comment.content,
+            isDeleted: comment.isDeleted,
+            replyCount,
+            author: toUserBrief(comment.author),
+            createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
+        }
+    }
+
+    private toReplyItem(reply: TopicPostComment) {
+        return {
+            id: reply.id,
+            parentId: reply.parentId ?? 0,
+            content: reply.content ?? '',
+            author: toUserBrief(reply.author),
+            createdAt: reply.createdAt,
+            updatedAt: reply.updatedAt,
+        }
     }
 }

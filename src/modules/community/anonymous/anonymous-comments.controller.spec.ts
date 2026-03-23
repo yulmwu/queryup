@@ -58,7 +58,12 @@ describe('AnonymousCommentsController', () => {
             { ip: undefined } as any,
         )
 
-        expect(service.createReply).toHaveBeenCalledWith(1, 2, { content: 'c', authorName: 'anon', password: 'p' }, '0.0.0.0')
+        expect(service.createReply).toHaveBeenCalledWith(
+            1,
+            2,
+            { content: 'c', authorName: 'anon', password: 'p' },
+            '0.0.0.0',
+        )
     })
 
     it('update delegates to service', async () => {
