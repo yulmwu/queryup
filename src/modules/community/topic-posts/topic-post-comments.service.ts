@@ -69,7 +69,7 @@ export class TopicPostCommentsService {
         const saved = await this.commentRepo.save(reply)
         saved.author = author
 
-        return this.toReplyItem(saved)
+        return this.toReplyItem(saved, parent.id)
     }
 
     async list(slug: string, postId: number, page?: number, size?: number) {
@@ -189,6 +189,7 @@ export class TopicPostCommentsService {
 
         const comment = await this.commentRepo.findOne({
             where: { id: commentId, post: { id: postId }, isDeleted: false },
+            relations: ['parent'],
         })
         if (!comment) throw new NotFoundException('Comment not found')
 
@@ -197,9 +198,10 @@ export class TopicPostCommentsService {
         if (dto.content !== undefined) comment.content = dto.content
 
         const saved = await this.commentRepo.save(comment)
+        const parentId = comment.parentId ?? comment.parent?.id ?? null
 
-        if (saved.parentId) {
-            return this.toReplyItem(saved)
+        if (parentId) {
+            return this.toReplyItem(saved, parentId)
         }
 
         const replyCount = await this.commentRepo.count({
@@ -237,10 +239,10 @@ export class TopicPostCommentsService {
         }
     }
 
-    private toReplyItem(reply: TopicPostComment) {
+    private toReplyItem(reply: TopicPostComment, parentId: number) {
         return {
             id: reply.id,
-            parentId: reply.parentId ?? 0,
+            parentId,
             content: reply.content ?? '',
             author: toUserBrief(reply.author),
             createdAt: reply.createdAt,

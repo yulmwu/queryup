@@ -68,7 +68,7 @@ export class AnonymousCommentsService {
 
         const saved = await this.commentRepo.save(reply)
 
-        return this.toReplyItem(saved)
+        return this.toReplyItem(saved, parent.id)
     }
 
     async list(postId: number, page?: number, size?: number) {
@@ -193,6 +193,7 @@ export class AnonymousCommentsService {
 
         const qb = this.commentRepo
             .createQueryBuilder('comment')
+            .leftJoinAndSelect('comment.parent', 'parent')
             .addSelect(['comment.passwordHash'])
             .where('comment.id = :id', { id: commentId })
             .andWhere('comment.postId = :postId', { postId })
@@ -207,9 +208,10 @@ export class AnonymousCommentsService {
         if (dto.content !== undefined) comment.content = dto.content
 
         const saved = await this.commentRepo.save(comment)
+        const parentId = comment.parentId ?? comment.parent?.id ?? null
 
-        if (saved.parentId) {
-            return this.toReplyItem(saved)
+        if (parentId) {
+            return this.toReplyItem(saved, parentId)
         }
 
         const replyCount = await this.commentRepo.count({
@@ -257,10 +259,10 @@ export class AnonymousCommentsService {
         }
     }
 
-    private toReplyItem(reply: AnonymousComment) {
+    private toReplyItem(reply: AnonymousComment, parentId: number) {
         return {
             id: reply.id,
-            parentId: reply.parentId ?? 0,
+            parentId,
             content: reply.content ?? '',
             author: {
                 authorName: reply.authorName,
