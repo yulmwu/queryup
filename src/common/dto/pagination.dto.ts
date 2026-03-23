@@ -29,3 +29,28 @@ export class PageMetaDto {
     @ApiProperty({ description: 'Total items.', example: 120 })
     total: number
 }
+
+export class CursorQueryDto {
+    @ApiProperty({ description: 'Cursor ID (last item id).', example: 100, required: false })
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @IsOptional()
+    cursor?: number
+
+    @ApiProperty({ description: 'Page size.', example: 20, required: false })
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(50)
+    @IsOptional()
+    size?: number = 20
+}
+
+export class CursorMetaDto {
+    @ApiProperty({ description: 'Page size.', example: 20 })
+    size: number
+
+    @ApiProperty({ description: 'Next cursor ID (null when no more).', example: 120, nullable: true })
+    nextCursor?: number | null
+}

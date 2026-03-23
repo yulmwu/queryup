@@ -14,7 +14,8 @@ Modules
 
 - `auth` -> `docs/RESTAPI/auth.md`
 - `users` -> `docs/RESTAPI/users.md`
-- `community` -> `docs/RESTAPI/community.md`
+- `community-anonymous` -> `docs/RESTAPI/community-anonymous.md`
+- `community-topic` -> `docs/RESTAPI/community-topic.md`
 - `errors` -> `docs/RESTAPI/errors.md`
 
 Common Response Shape

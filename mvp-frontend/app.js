@@ -122,18 +122,32 @@ registerForm('loginForm', async (payload) => {
     setPanelOutput('accountOutput', 'Login', data)
 })
 
-registerForm('generalCreateForm', async (payload) => {
-    const data = await apiRequest('/community/general/posts', { method: 'POST', body: payload, auth: true })
-    setOutput('General post created', data)
-    setPanelOutput('generalOutput', 'Create', data)
-    activateTab('home')
-})
-
 registerForm('anonCreateForm', async (payload) => {
     const data = await apiRequest('/community/anonymous/posts', { method: 'POST', body: payload })
     setOutput('Anonymous post created', data)
     setPanelOutput('anonOutput', 'Create', data)
     activateTab('home')
+})
+
+registerForm('anonCommentCreateForm', async (payload) => {
+    const postId = payload.postId
+    delete payload.postId
+    const data = await apiRequest(`/community/anonymous/posts/${postId}/comments`, { method: 'POST', body: payload })
+    setOutput('Anonymous comment created', data)
+    setPanelOutput('anonOutput', 'Create Comment', data)
+})
+
+registerForm('anonReplyCreateForm', async (payload) => {
+    const postId = payload.postId
+    const commentId = payload.commentId
+    delete payload.postId
+    delete payload.commentId
+    const data = await apiRequest(`/community/anonymous/posts/${postId}/comments/${commentId}/replies`, {
+        method: 'POST',
+        body: payload,
+    })
+    setOutput('Anonymous reply created', data)
+    setPanelOutput('anonOutput', 'Create Reply', data)
 })
 
 registerForm('topicCreateForm', async (payload) => {
@@ -152,38 +166,41 @@ registerForm('topicPostsCreateForm', async (payload) => {
     activateTab('home')
 })
 
+registerForm('topicCommentCreateForm', async (payload) => {
+    const slug = payload.slug
+    const postId = payload.postId
+    delete payload.slug
+    delete payload.postId
+    const data = await apiRequest(`/community/topics/${slug}/posts/${postId}/comments`, {
+        method: 'POST',
+        body: payload,
+        auth: true,
+    })
+    setOutput('Topic post comment created', data)
+    setPanelOutput('topicOutput', 'Create Comment', data)
+})
+
+registerForm('topicReplyCreateForm', async (payload) => {
+    const slug = payload.slug
+    const postId = payload.postId
+    const commentId = payload.commentId
+    delete payload.slug
+    delete payload.postId
+    delete payload.commentId
+    const data = await apiRequest(`/community/topics/${slug}/posts/${postId}/comments/${commentId}/replies`, {
+        method: 'POST',
+        body: payload,
+        auth: true,
+    })
+    setOutput('Topic post reply created', data)
+    setPanelOutput('topicOutput', 'Create Reply', data)
+})
+
 const registerButton = (btnId, handler) => {
     const button = document.getElementById(btnId)
     if (!button) return
     button.addEventListener('click', wrapErrors(btnId, handler))
 }
-
-registerButton('generalListBtn', async () => {
-    const page = document.getElementById('generalPage').value || 1
-    const size = document.getElementById('generalSize').value || 20
-    const data = await apiRequest(`/community/general/posts?page=${page}&size=${size}`)
-    setOutput('General posts', data)
-    setPanelOutput('generalOutput', 'List', data)
-})
-
-registerButton('generalListBtn2', async () => {
-    const page = document.getElementById('generalPage').value || 1
-    const size = document.getElementById('generalSize').value || 20
-    const data = await apiRequest(`/community/general/posts?page=${page}&size=${size}`)
-    setOutput('General posts', data)
-    setPanelOutput('generalOutput', 'List', data)
-})
-
-registerButton('generalDetailBtn', async () => {
-    const id = document.getElementById('generalDetailId').value
-    if (!id) {
-        setPanelOutput('generalOutput', 'Detail', 'Please provide a post id.')
-        return
-    }
-    const data = await apiRequest(`/community/general/posts/${id}`)
-    setOutput('General post detail', data)
-    setPanelOutput('generalOutput', 'Detail', data)
-})
 
 registerButton('anonListBtn', async () => {
     const page = document.getElementById('anonPage').value || 1
@@ -210,6 +227,36 @@ registerButton('anonDetailBtn', async () => {
     const data = await apiRequest(`/community/anonymous/posts/${id}`)
     setOutput('Anonymous post detail', data)
     setPanelOutput('anonOutput', 'Detail', data)
+})
+
+registerButton('anonCommentListBtn', async () => {
+    const postId = document.getElementById('anonCommentPostId').value
+    if (!postId) {
+        setPanelOutput('anonOutput', 'Comment List', 'Please provide a post id.')
+        return
+    }
+    const page = document.getElementById('anonCommentPage').value || 1
+    const size = document.getElementById('anonCommentSize').value || 20
+    const data = await apiRequest(`/community/anonymous/posts/${postId}/comments?page=${page}&size=${size}`)
+    setOutput('Anonymous comments', data)
+    setPanelOutput('anonOutput', 'Comment List', data)
+})
+
+registerButton('anonReplyListBtn', async () => {
+    const postId = document.getElementById('anonReplyPostId').value
+    const commentId = document.getElementById('anonReplyCommentId').value
+    if (!postId || !commentId) {
+        setPanelOutput('anonOutput', 'Reply List', 'Please provide a post id and comment id.')
+        return
+    }
+    const cursor = document.getElementById('anonReplyCursor').value
+    const size = document.getElementById('anonReplySize').value || 20
+    const cursorQuery = cursor ? `&cursor=${cursor}` : ''
+    const data = await apiRequest(
+        `/community/anonymous/posts/${postId}/comments/${commentId}/replies?size=${size}${cursorQuery}`,
+    )
+    setOutput('Anonymous replies', data)
+    setPanelOutput('anonOutput', 'Reply List', data)
 })
 
 registerButton('topicListBtn', async () => {
@@ -263,6 +310,38 @@ registerButton('topicPostDetailBtn', async () => {
     const data = await apiRequest(`/community/topics/${slug}/posts/${id}`)
     setOutput('Topic post detail', data)
     setPanelOutput('topicOutput', 'Topic Post Detail', data)
+})
+
+registerButton('topicCommentListBtn', async () => {
+    const slug = document.getElementById('topicCommentSlug').value.trim()
+    const postId = document.getElementById('topicCommentPostId').value
+    if (!slug || !postId) {
+        setPanelOutput('topicOutput', 'Comment List', 'Please provide a topic slug and post id.')
+        return
+    }
+    const page = document.getElementById('topicCommentPage').value || 1
+    const size = document.getElementById('topicCommentSize').value || 20
+    const data = await apiRequest(`/community/topics/${slug}/posts/${postId}/comments?page=${page}&size=${size}`)
+    setOutput('Topic post comments', data)
+    setPanelOutput('topicOutput', 'Comment List', data)
+})
+
+registerButton('topicReplyListBtn', async () => {
+    const slug = document.getElementById('topicReplySlug').value.trim()
+    const postId = document.getElementById('topicReplyPostId').value
+    const commentId = document.getElementById('topicReplyCommentId').value
+    if (!slug || !postId || !commentId) {
+        setPanelOutput('topicOutput', 'Reply List', 'Please provide topic slug, post id, and comment id.')
+        return
+    }
+    const cursor = document.getElementById('topicReplyCursor').value
+    const size = document.getElementById('topicReplySize').value || 20
+    const cursorQuery = cursor ? `&cursor=${cursor}` : ''
+    const data = await apiRequest(
+        `/community/topics/${slug}/posts/${postId}/comments/${commentId}/replies?size=${size}${cursorQuery}`,
+    )
+    setOutput('Topic post replies', data)
+    setPanelOutput('topicOutput', 'Reply List', data)
 })
 
 registerButton('meBtn', async () => {

@@ -23,7 +23,6 @@
 
     <nav class="tabs" role="tablist">
         <button class="tab active" data-tab="home">Home</button>
-        <button class="tab" data-tab="general">General</button>
         <button class="tab" data-tab="anonymous">Anonymous</button>
         <button class="tab" data-tab="topics">Topics</button>
         <button class="tab" data-tab="account">Account</button>
@@ -34,7 +33,6 @@
         <section class="panel active" data-panel="home">
             <div class="hero">
                 <div class="quick-actions">
-                    <button id="generalListBtn">Load General Posts</button>
                     <button id="anonListBtn">Load Anonymous Posts</button>
                     <button id="topicListBtn">Load Topics</button>
                 </div>
@@ -42,40 +40,6 @@
             <div class="output-wrap">
                 <h2>Latest Output</h2>
                 <pre id="output" class="output"></pre>
-            </div>
-        </section>
-
-        <section class="panel" data-panel="general">
-            <div class="layout">
-                <div>
-                    <h2>General Board</h2>
-                    <div class="card">
-                        <div class="row">
-                            <input id="generalPage" type="number" placeholder="page" value="1" />
-                            <input id="generalSize" type="number" placeholder="size" value="20" />
-                            <button id="generalListBtn2">Load</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>Post Detail</h3>
-                        <div class="row">
-                            <input id="generalDetailId" type="number" placeholder="post id" />
-                            <button id="generalDetailBtn">Load</button>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3>Create Post</h3>
-                    <form id="generalCreateForm" class="card">
-                        <input name="title" placeholder="title" required />
-                        <textarea name="content" placeholder="content" required></textarea>
-                        <button type="submit">Create</button>
-                    </form>
-                    <div class="card">
-                        <h3>Response</h3>
-                        <pre id="generalOutput" class="output"></pre>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -97,6 +61,22 @@
                             <button id="anonDetailBtn">Load</button>
                         </div>
                     </div>
+                    <div class="card">
+                        <h3>Comments</h3>
+                        <div class="row">
+                            <input id="anonCommentPostId" type="number" placeholder="post id" />
+                            <input id="anonCommentPage" type="number" placeholder="page" value="1" />
+                            <input id="anonCommentSize" type="number" placeholder="size" value="20" />
+                            <button id="anonCommentListBtn">List</button>
+                        </div>
+                        <div class="row">
+                            <input id="anonReplyPostId" type="number" placeholder="post id" />
+                            <input id="anonReplyCommentId" type="number" placeholder="comment id" />
+                            <input id="anonReplyCursor" type="number" placeholder="cursor" />
+                            <input id="anonReplySize" type="number" placeholder="size" value="20" />
+                            <button id="anonReplyListBtn">Replies</button>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h3>Create Post</h3>
@@ -106,6 +86,23 @@
                         <input name="title" placeholder="title" required />
                         <textarea name="content" placeholder="content" required></textarea>
                         <button type="submit">Create</button>
+                    </form>
+                    <h3>Create Comment</h3>
+                    <form id="anonCommentCreateForm" class="card">
+                        <input name="postId" type="number" placeholder="post id" required />
+                        <input name="authorName" placeholder="authorName" required />
+                        <input name="password" placeholder="password" type="password" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                    <h3>Create Reply</h3>
+                    <form id="anonReplyCreateForm" class="card">
+                        <input name="postId" type="number" placeholder="post id" required />
+                        <input name="commentId" type="number" placeholder="comment id" required />
+                        <input name="authorName" placeholder="authorName" required />
+                        <input name="password" placeholder="password" type="password" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create Reply</button>
                     </form>
                     <div class="card">
                         <h3>Response</h3>
@@ -150,6 +147,24 @@
                             <button id="topicPostDetailBtn">Load</button>
                         </div>
                     </div>
+                    <div class="card">
+                        <h3>Post Comments</h3>
+                        <div class="row">
+                            <input id="topicCommentSlug" placeholder="topic slug" />
+                            <input id="topicCommentPostId" type="number" placeholder="post id" />
+                            <input id="topicCommentPage" type="number" placeholder="page" value="1" />
+                            <input id="topicCommentSize" type="number" placeholder="size" value="20" />
+                            <button id="topicCommentListBtn">List</button>
+                        </div>
+                        <div class="row">
+                            <input id="topicReplySlug" placeholder="topic slug" />
+                            <input id="topicReplyPostId" type="number" placeholder="post id" />
+                            <input id="topicReplyCommentId" type="number" placeholder="comment id" />
+                            <input id="topicReplyCursor" type="number" placeholder="cursor" />
+                            <input id="topicReplySize" type="number" placeholder="size" value="20" />
+                            <button id="topicReplyListBtn">Replies</button>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h3>Create Topic</h3>
@@ -165,6 +180,21 @@
                         <input name="title" placeholder="title" required />
                         <textarea name="content" placeholder="content" required></textarea>
                         <button type="submit">Create</button>
+                    </form>
+                    <h3>Create Post Comment</h3>
+                    <form id="topicCommentCreateForm" class="card">
+                        <input name="slug" placeholder="topic slug" required />
+                        <input name="postId" type="number" placeholder="post id" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create</button>
+                    </form>
+                    <h3>Create Post Reply</h3>
+                    <form id="topicReplyCreateForm" class="card">
+                        <input name="slug" placeholder="topic slug" required />
+                        <input name="postId" type="number" placeholder="post id" required />
+                        <input name="commentId" type="number" placeholder="comment id" required />
+                        <textarea name="content" placeholder="content" required></textarea>
+                        <button type="submit">Create Reply</button>
                     </form>
                     <div class="card">
                         <h3>Response</h3>
