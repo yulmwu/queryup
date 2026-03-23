@@ -60,9 +60,9 @@
     },
     "overrides": {
         "strip-ansi": "6.0.1",
-        "lru-cache": "7.18.3",
-        "path-scurry": {
-            "lru-cache": "10.4.3"
+        "lru-cache": "10.4.3",
+        "@babel/helper-compilation-targets": {
+            "lru-cache": "7.18.3"
         }
     },
     "devDependencies": {

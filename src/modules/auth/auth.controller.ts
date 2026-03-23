@@ -9,6 +9,7 @@ import {
     UseGuards,
     Get,
     Put,
+    HttpCode,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import {
@@ -70,6 +71,7 @@ export class AuthController {
     }
 
     @Post('refresh')
+    @HttpCode(200)
     @ApiOperation({ summary: 'Re-issue access token using refresh token' })
     @ApiResponse({ status: 200, description: 'Returns new access token.', type: AccessTokenDto })
     @ApiBadRequestResponse({ description: 'Refresh token is required' })
@@ -82,6 +84,7 @@ export class AuthController {
     }
 
     @Post('logout')
+    @HttpCode(200)
     @ApiOperation({ summary: 'Logout and remove refresh token' })
     @ApiResponse({ status: 200, description: 'Logout successful.' })
     @ApiBadRequestResponse({ description: 'Refresh token is required' })

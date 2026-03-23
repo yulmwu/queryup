@@ -50,7 +50,8 @@ export class AnonymousCommentsService {
 
     async createReply(postId: number, commentId: number, dto: AnonymousCommentCreateDto, ipAddress: string) {
         const post = await this.findPostOrThrow(postId)
-        const parent = await this.findTopLevelCommentOrThrow(postId, commentId)
+        const parent = await this.commentRepo.findOne({ where: { id: commentId, post: { id: postId } } })
+        if (!parent) throw new NotFoundException('Comment not found')
         if (parent.parentId) throw new BadRequestException('Nested replies are not allowed')
         const passwordHash = await bcrypt.hash(dto.password, 10)
 

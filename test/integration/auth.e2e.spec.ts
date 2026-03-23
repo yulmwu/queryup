@@ -33,7 +33,7 @@ describe('Auth API', () => {
         const payload = buildRegisterPayload('auth_refresh')
         await agent.post('/auth/register').send(payload).expect(201)
         await agent.post('/auth/login').send({ username: payload.username, password: payload.password }).expect(201)
-        await agent.post('/auth/refresh').expect(201)
+        await agent.post('/auth/refresh').expect(200)
     })
 
     it('GET /auth/me', async () => {
@@ -64,6 +64,6 @@ describe('Auth API', () => {
         const payload = buildRegisterPayload('auth_logout')
         await agent.post('/auth/register').send(payload).expect(201)
         await agent.post('/auth/login').send({ username: payload.username, password: payload.password }).expect(201)
-        await agent.post('/auth/logout').expect(201)
+        await agent.post('/auth/logout').expect(200)
     })
 })

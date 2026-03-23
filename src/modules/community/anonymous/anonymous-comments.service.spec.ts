@@ -1,4 +1,4 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { AnonymousCommentsService } from './anonymous-comments.service'
@@ -83,6 +83,24 @@ describe('AnonymousCommentsService', () => {
         await expect(service.update(1, 1, { password: 'bad' })).rejects.toBeInstanceOf(UnauthorizedException)
     })
 
+    it('createReply throws when parent comment is missing', async () => {
+        postRepo.findOne.mockResolvedValue({ id: 1 })
+        commentRepo.findOne.mockResolvedValue(null)
+
+        await expect(
+            service.createReply(1, 10, { content: 'c', authorName: 'anon', password: 'p' }, '1.2.3.4'),
+        ).rejects.toBeInstanceOf(NotFoundException)
+    })
+
+    it('createReply rejects nested replies', async () => {
+        postRepo.findOne.mockResolvedValue({ id: 1 })
+        commentRepo.findOne.mockResolvedValue({ id: 10, parentId: 1 })
+
+        await expect(
+            service.createReply(1, 10, { content: 'c', authorName: 'anon', password: 'p' }, '1.2.3.4'),
+        ).rejects.toBeInstanceOf(BadRequestException)
+    })
+
     it('list returns reply counts', async () => {
         postRepo.findOne.mockResolvedValue({ id: 1 })
         const listQb = createMockQueryBuilder({
@@ -113,26 +131,23 @@ describe('AnonymousCommentsService', () => {
     it('listReplies returns nextCursor null when no more', async () => {
         postRepo.findOne.mockResolvedValue({ id: 1 })
         commentRepo.findOne.mockResolvedValueOnce({ id: 10 })
-        const repliesQb = createMockQueryBuilder({
-            manyAndCount: [
-                [
-                    {
-                        id: 1,
-                        content: 'r',
-                        authorName: 'anon',
-                        ipAddress: '1.2.3.4',
-                        createdAt: new Date('2024-01-01T00:00:00.000Z'),
-                        updatedAt: new Date('2024-01-01T00:00:00.000Z'),
-                    },
-                ],
-                1,
-            ],
-        })
+        const replyRow = {
+            id: 1,
+            content: 'r',
+            authorName: 'anon',
+            ipAddress: '1.2.3.4',
+            createdAt: new Date('2024-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }
+        const repliesQb = createMockQueryBuilder()
+        repliesQb.getMany.mockResolvedValue([replyRow])
         commentRepo.createQueryBuilder.mockImplementationOnce(() => repliesQb)
 
         const result = await service.listReplies(1, 10, undefined, 10)
 
         expect(result.meta.nextCursor).toBeNull()
+        expect(result.items).toHaveLength(1)
+        expect(result.items[0].id).toBe(1)
     })
 
     it('update succeeds with correct password', async () => {

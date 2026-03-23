@@ -64,6 +64,14 @@ describe('TopicPostCommentsService', () => {
         await expect(service.createReply('slug', 2, 3, 1, { content: 'c' })).rejects.toBeInstanceOf(BadRequestException)
     })
 
+    it('createReply throws when comment missing', async () => {
+        topicRepo.findOne.mockResolvedValue({ id: 1 })
+        postRepo.findOne.mockResolvedValue({ id: 2 })
+        commentRepo.findOne.mockResolvedValue(null)
+
+        await expect(service.createReply('slug', 2, 3, 1, { content: 'c' })).rejects.toBeInstanceOf(NotFoundException)
+    })
+
     it('list returns reply counts', async () => {
         topicRepo.findOne.mockResolvedValue({ id: 1 })
         postRepo.findOne.mockResolvedValue({ id: 2 })

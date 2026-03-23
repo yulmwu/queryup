@@ -51,7 +51,8 @@ export class TopicPostCommentsService {
 
     async createReply(slug: string, postId: number, commentId: number, userId: number, dto: TopicPostCommentCreateDto) {
         const post = await this.findPostOrThrow(slug, postId)
-        const parent = await this.findTopLevelCommentOrThrow(postId, commentId)
+        const parent = await this.commentRepo.findOne({ where: { id: commentId, post: { id: postId } } })
+        if (!parent) throw new NotFoundException('Comment not found')
         if (parent.parentId) throw new BadRequestException('Nested replies are not allowed')
 
         const author = await this.usersService.findById(userId)
